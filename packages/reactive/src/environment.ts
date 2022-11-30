@@ -2,10 +2,10 @@ import { ObservableListener, Reaction, ReactionsMap } from './types'
 import { ArraySet } from './array'
 import { DataNode } from './tree'
 
-export const ProxyRaw = new WeakMap()
-export const RawProxy = new WeakMap()
+export const ProxyRaw = new WeakMap() // key 是 proxy， value 是 普通源对象
+export const RawProxy = new WeakMap() // key 是 普通源对象， value 是 proxy
 export const RawShallowProxy = new WeakMap()
-export const RawNode = new WeakMap<object, DataNode>()
+export const RawNode = new WeakMap<object, DataNode>() // key 是 proxy value 是 node
 export const RawReactionsMap = new WeakMap<object, ReactionsMap>()
 
 export const ReactionStack: Reaction[] = []

@@ -68,6 +68,11 @@ export const createObservable = (
   return value
 }
 
+/**
+ * @description: 做简单的参数转化 增加 MakeObservableSymbol key
+ * @param {*} T
+ * @return {*}
+ */
 export const createAnnotation = <T extends (visitor: IVisitor) => any>(
   maker: T
 ) => {
@@ -106,7 +111,7 @@ export const createBoundaryFunction = (
     return results
   }
 
-  boundary.bound = createBindFunction(boundary)
+  boundary.bound = createBindFunction(boundary) // 相当于是一个闭包 定义一个callback 之后 可以随处传入参数
   return boundary
 }
 

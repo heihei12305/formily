@@ -19,16 +19,17 @@ interface IValue {
 export const autorun = (tracker: Reaction, name = 'AutoRun') => {
   const reaction: Reaction = () => {
     if (!isFn(tracker)) return
-    if (reaction._boundary > 0) return
+    if (reaction._boundary > 0) return // 避免反复触发 reaction
     if (ReactionStack.indexOf(reaction) === -1) {
+      // 构造新的reaction时会把之前那个清理掉
       releaseBindingReactions(reaction)
       try {
-        batchStart()
-        ReactionStack.push(reaction)
-        tracker()
+        batchStart() // 使得 isBatching 为 true
+        ReactionStack.push(reaction) // proxy handles 内部 会消费 ReactionStack 栈顶元素
+        tracker() // 触发proxy get/set 函数
       } finally {
         ReactionStack.pop()
-        reaction._boundary++
+        reaction._boundary++ // 也许是上面用的 避免反复触发 reaction
         batchEnd()
         reaction._boundary = 0
         reaction._memos.cursor = 0
@@ -57,6 +58,13 @@ export const autorun = (tracker: Reaction, name = 'AutoRun') => {
   }
 }
 
+/**
+ * @description: 在 autorun 中用于创建持久引用数据，仅仅只会受依赖变化而重新执行 memo 内部函数
+ * * 注意：请不要在 If/For 这类语句中使用，因为它内部是依赖执行顺序来绑定当前 autorun 的
+ * @param {*} T
+ * @param {any} dependencies
+ * @return {*}
+ */
 autorun.memo = <T>(callback: () => T, dependencies?: any[]): T => {
   if (!isFn(callback)) return
   const current = ReactionStack[ReactionStack.length - 1]
@@ -76,6 +84,13 @@ autorun.memo = <T>(callback: () => T, dependencies?: any[]): T => {
   return old.value
 }
 
+/**
+ * @description: 在 autorun 中用于响应 autorun 第一次执行的下一个微任务时机与响应 autorun 的 dispose
+ * * 注意：请不要在 If/For 这类语句中使用，因为它内部是依赖执行顺序来绑定当前 autorun 的
+ * @param {function} callback
+ * @param {any} dependencies
+ * @return {*}
+ */
 autorun.effect = (callback: () => void | Dispose, dependencies?: any[]) => {
   if (!isFn(callback)) return
   const current = ReactionStack[ReactionStack.length - 1]
@@ -99,6 +114,11 @@ autorun.effect = (callback: () => void | Dispose, dependencies?: any[]) => {
   }
 }
 
+/**
+ * @description: 大体流程跟autoRun一致 利用高阶函数 _scheduler 特性
+ * * 接收一个 tracker 函数，与 callback 响应函数，如果 tracker 内部有消费 observable 数据，数据发生变化时，tracker 函数会重复执行，但是 callback 执行必须要求 tracker 函数返回值发生变化时才执行
+ * @return {*}
+ */
 export const reaction = <T>(
   tracker: () => T,
   subscriber?: (value: T, oldValue: T) => void,

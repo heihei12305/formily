@@ -10,6 +10,13 @@ export interface IRef {
   <T>(target: T): { value: T }
 }
 
+/**
+ * @description: 传入一个基本数据，内部数据会把这个 value 包成一个 store 从而调用defineProperty
+ * * get 属于 baseHandlers 的简化版
+ * * set 因为不存在对象 key 新增情况 也做了baseHandlers的简化
+ * @param {*} createAnnotation
+ * @return {*}
+ */
 export const ref: IRef = createAnnotation(({ target, key, value }) => {
   const store = {
     value: target ? target[key] : value,

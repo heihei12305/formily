@@ -11,6 +11,7 @@ import { isFn } from './checkers'
 
 export const batch: IBatch = createBoundaryAnnotation(batchStart, batchEnd)
 batch.scope = createBoundaryAnnotation(batchScopeStart, batchScopeEnd)
+// 终点
 batch.endpoint = (callback?: () => void) => {
   if (!isFn(callback)) return
   if (BatchCount.value === 0) {

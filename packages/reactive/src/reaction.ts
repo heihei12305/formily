@@ -16,6 +16,11 @@ import {
 
 const ITERATION_KEY = Symbol('iteration key')
 
+/**
+ * @description:
+ * * 这个是很重要的， proxy 触发时 通过 target 添加 react 到 RawReactionsMap > reactionsMap map
+ * @return {*}
+ */
 const addRawReactionsMap = (
   target: any,
   key: PropertyKey,
@@ -39,6 +44,11 @@ const addRawReactionsMap = (
   }
 }
 
+/**
+ * @description: 向 reaction _reactionsSet 里 添加
+ *  * 添加这个好像只是为了清理内存
+ * @return {*}
+ */
 const addReactionsMapToReaction = (
   reaction: Reaction,
   reactionsMap: ReactionsMap
@@ -67,7 +77,12 @@ const getReactionsFromTargetKey = (target: any, key: PropertyKey) => {
   }
   return reactions
 }
-
+/**
+ * @description: 累计 PendingReactions、PendingScopeReactions batchEnd触发 或者直接触发 reaction
+ * @param {any} target
+ * @param {PropertyKey} key
+ * @return {*}
+ */
 const runReactions = (target: any, key: PropertyKey) => {
   const reactions = getReactionsFromTargetKey(target, key)
   const prevUntrackCount = UntrackCount.value
@@ -95,6 +110,11 @@ const notifyObservers = (operation: IOperation) => {
   ObserverListeners.forEach((fn) => fn(operation))
 }
 
+/**
+ * @description: 向 ReactionStack 栈顶 _reactionsSet 添加 当前 reaction
+ * @param {IOperation} operation
+ * @return {*}
+ */
 export const bindTargetKeyWithCurrentReaction = (operation: IOperation) => {
   let { key, type, target } = operation
   if (type === 'iterate') {
@@ -105,6 +125,7 @@ export const bindTargetKeyWithCurrentReaction = (operation: IOperation) => {
   if (isUntracking()) return
   if (current) {
     DependencyCollected.value = true
+    // addRawReactionsMap 是最重要的
     addReactionsMapToReaction(current, addRawReactionsMap(target, key, current))
   }
 }
@@ -122,7 +143,11 @@ export const bindComputedReactions = (reaction: Reaction) => {
     }
   }
 }
-
+/**
+ * @description: 主要是handles里面使用，触发 runReactions
+ * @param {IOperation} operation
+ * @return {*}
+ */
 export const runReactionsFromTargetKey = (operation: IOperation) => {
   let { key, type, target, oldTarget } = operation
   batchStart()
@@ -184,8 +209,8 @@ export const batchEnd = () => {
   if (BatchCount.value === 0) {
     const prevUntrackCount = UntrackCount.value
     UntrackCount.value = 0
-    executePendingReactions()
-    executeBatchEndpoints()
+    executePendingReactions() // 批量触发 reactions 执行
+    executeBatchEndpoints() // endpoint 会设置 BatchEndpoints，在这里释放
     UntrackCount.value = prevUntrackCount
   }
 }

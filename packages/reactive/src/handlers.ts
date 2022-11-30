@@ -175,6 +175,7 @@ export const baseHandlers: ProxyHandler<any> = {
     if (observableResult) {
       return observableResult
     }
+    // 递归 Oberservable
     if (!isObservable(result) && isSupportObservable(result)) {
       const descriptor = Reflect.getOwnPropertyDescriptor(target, key)
       if (

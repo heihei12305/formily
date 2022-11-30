@@ -1,5 +1,10 @@
 import { RawNode, ProxyRaw } from './environment'
 import { PropertyKey, IOperation } from './types'
+
+/**
+ * @description: 相当于一个闭包 保存 必要信息
+ * @return {*}
+ */
 export class DataChange {
   node: DataNode
   key: PropertyKey
@@ -20,6 +25,10 @@ export class DataChange {
     return this.node.path.concat(this.key)
   }
 }
+/**
+ * @description:  DataNode 里面主要维护有 path，parent
+ * @return {*}
+ */
 export class DataNode {
   target: any
 
@@ -42,6 +51,7 @@ export class DataNode {
     return ProxyRaw.get(this.target) || this.target
   }
 
+  // TODO 搞清楚这个 parent 啥玩意
   get parent() {
     if (!this.target) return
     return getDataNode(this.targetRaw)
@@ -65,6 +75,11 @@ export class DataNode {
   }
 }
 
+/**
+ * @description:  getDataNode 拿到的是 RawNode
+ * @param {any} raw
+ * @return {*}
+ */
 export const getDataNode = (raw: any) => {
   return RawNode.get(raw)
 }

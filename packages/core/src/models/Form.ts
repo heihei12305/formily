@@ -100,6 +100,7 @@ export class Form<ValueType extends object = any> {
     this.mounted = false
     this.unmounted = false
     this.display = this.props.display || 'visible'
+    // 表单交互模式 "editable" | "disabled" | "readOnly" | "readPretty"
     this.pattern = this.props.pattern || 'editable'
     this.editable = this.props.editable
     this.disabled = this.props.disabled

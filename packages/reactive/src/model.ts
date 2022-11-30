@@ -7,6 +7,10 @@ import { Annotations } from './types'
 import { action } from './action'
 import { ProxyRaw, RawProxy } from './environment'
 
+/**
+ * @description: 手动定义领域模型，可以指定具体属性的响应式行为，也可以指定某个方法为 batch 模式
+ * @return {*}
+ */
 export function define<Target extends object = any>(
   target: Target,
   annotations?: Annotations<Target>
@@ -28,6 +32,14 @@ export function define<Target extends object = any>(
   return target
 }
 
+/**
+ * @description: 快速定义领域模型，会对模型属性做自动声明：
+ * * getter/setter 属性自动声明 computed
+ * * 函数自动声明 action
+ * * 普通属性自动声明 observable
+ * @param {Target} target
+ * @return {*}
+ */
 export function model<Target extends object = any>(target: Target): Target {
   const annotations = Object.keys(target || {}).reduce((buf, key) => {
     const descriptor = Object.getOwnPropertyDescriptor(target, key)

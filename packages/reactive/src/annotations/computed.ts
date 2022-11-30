@@ -93,6 +93,7 @@ export const computed: IComputed = createAnnotation(
     }
     reaction._name = 'ComputedReaction'
     reaction._scheduler = () => {
+      // 当内部obersvable触发 scheduler 时 再次被设置为true
       reaction._dirty = true
       runReactionsFromTargetKey({
         target: context,
@@ -107,13 +108,18 @@ export const computed: IComputed = createAnnotation(
     reaction._property = property
 
     function get() {
+      // 这么写好像是为了卸载的时候 清理内存
       if (hasRunningReaction()) {
         bindComputedReactions(reaction)
       }
+      // 如果没有在不收集依赖
       if (!isUntracking()) {
         //如果允许untracked过程中收集依赖，那么永远不会存在绑定，因为_dirty已经设置为false
+        // 只有内部依赖发生变化时，_dirty才会被重置为true 重复获取不会重复执行 compute
         if (reaction._dirty) {
+          // 第一次执行时 _dirty 为 true
           reaction()
+          // 后续设置为 false
           reaction._dirty = false
         }
       } else {

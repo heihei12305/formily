@@ -10,6 +10,11 @@ export interface IBox {
   <T>(target: T): { get(): T; set(value: T): void }
 }
 
+/**
+ * @description: 与 ref 相似，只是读写数据是通过 get/set 方法
+ * @param {*} createAnnotation
+ * @return {*}
+ */
 export const box: IBox = createAnnotation(({ target, key, value }) => {
   const store = {
     value: target ? target[key] : value,

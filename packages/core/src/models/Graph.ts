@@ -9,6 +9,10 @@ import {
   isObjectFieldState,
 } from '../shared/checkers'
 
+/**
+ * @description: 维护&获取 当前 form 的全部节点信息
+ * @return {*}
+ */
 export class Graph {
   form: Form
 

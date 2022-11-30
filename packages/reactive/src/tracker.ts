@@ -14,6 +14,7 @@ export class Tracker {
     scheduler?: (reaction: Reaction) => void,
     name = 'TrackerReaction'
   ) {
+    // 与 autorun 相比 只是默认包了一个 _scheduler
     this.track._scheduler = (callback) => {
       if (this.track._boundary === 0) this.dispose()
       if (isFn(callback)) scheduler(callback)

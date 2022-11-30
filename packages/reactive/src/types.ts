@@ -70,7 +70,7 @@ export type Reaction = ((...args: any[]) => any) & {
   _property?: PropertyKey
   _computesSet?: ArraySet<Reaction>
   _reactionsSet?: ArraySet<ReactionsMap>
-  _scheduler?: (reaction: Reaction) => void
+  _scheduler?: (reaction: Reaction) => void // reaction 执行的时候，如果有 _scheduler 则会以 _scheduler(reaction) 执行
   _memos?: {
     queue: IMemoQueueItem[]
     cursor: number
