@@ -89,9 +89,12 @@ export class Field<
     this.props = props
     this.designable = designable
     initializeStart()
+    // locate 很重要
     this.locate(address)
+    // 设置 form 的一大堆参数
     this.initialize()
     this.makeObservable()
+    // 监听 值、可见性、可编辑 等属性变化
     this.makeReactive()
     this.onInit()
     initializeEnd()
@@ -227,6 +230,7 @@ export class Field<
           if (isValid(value) && this.selfModified && !this.caches.inputting) {
             validateSelf(this)
           }
+          // 清空数据
         }
       ),
       createReaction(
@@ -235,6 +239,7 @@ export class Field<
           this.notify(LifeCycleTypes.ON_FIELD_INITIAL_VALUE_CHANGE)
         }
       ),
+      // display visible/none/hidden 的逻辑在这里处理的呢
       createReaction(
         () => this.display,
         (display) => {
@@ -251,6 +256,8 @@ export class Field<
             }
           }
           if (display === 'none' || display === 'hidden') {
+            //TODO 这个会导致什么呢 很神奇
+            // 暂时无法理解这个
             this.setFeedback({
               type: 'error',
               messages: [],

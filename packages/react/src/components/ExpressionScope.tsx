@@ -4,7 +4,7 @@ import { SchemaExpressionScopeContext } from '../shared'
 import { IExpressionScopeProps, ReactFC } from '../types'
 
 export const ExpressionScope: ReactFC<IExpressionScopeProps> = (props) => {
-  const scope = useContext(SchemaExpressionScopeContext)
+  rray
   return (
     <SchemaExpressionScopeContext.Provider
       value={lazyMerge(scope, props.value)}

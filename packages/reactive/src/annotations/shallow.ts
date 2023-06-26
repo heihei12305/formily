@@ -5,6 +5,10 @@ import {
 } from '../reaction'
 import { IObservable } from './observable'
 
+/**
+ * @description: 创建浅劫持响应式对象，也就是只会对目标对象的第一级属性操作响应
+ * @return {*}
+ */
 export const shallow: IObservable = createAnnotation(
   ({ target, key, value }) => {
     const store = {

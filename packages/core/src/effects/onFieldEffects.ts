@@ -105,6 +105,11 @@ export function onFieldInit(
   }
 }
 
+/**
+ * @description 基于 observable autorun
+ * @param pattern
+ * @param callback
+ */
 export function onFieldReact(
   pattern: FormPathPattern,
   callback?: (field: GeneralField, form: Form) => void
@@ -121,6 +126,12 @@ export function onFieldChange(
   pattern: FormPathPattern,
   callback?: (field: GeneralField, form: Form) => void
 ): void
+
+/**
+ * @param pattern
+ * @param watches 第二个参数还挺有用的
+ * @param callback
+ */
 export function onFieldChange(
   pattern: FormPathPattern,
   watches: (keyof IFieldState)[],

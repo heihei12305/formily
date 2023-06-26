@@ -47,6 +47,13 @@ export class BaseField<Decorator = any, Component = any, TextType = any> {
 
   actions: IFieldActions = {}
 
+  /**
+   * @description: 向 form.fields 设置当前 field, 并设置 address、path、form.indexes 等信息
+   * * Address 永远是代表节点的绝对路径，Path 是会跳过 VoidField 的节点路径，
+   * * 但是如果是 VoidField 的 Path，是会保留它自身的路径位置
+   * @param {FormPathPattern} address
+   * @return {*}
+   */
   locate(address: FormPathPattern) {
     this.form.fields[address.toString()] = this as any
     locateNode(this as any, address)
@@ -93,6 +100,10 @@ export class BaseField<Decorator = any, Component = any, TextType = any> {
     return this.form.fields[identifier]
   }
 
+  /**
+   * @description display 逻辑，优先取决于上一级 parent
+   * * 这个写法很有意思，惰性计算，如果有上一级别，以上一级别为准
+   */
   get display(): FieldDisplayTypes {
     const parentDisplay = (this.parent as any)?.display
     if (parentDisplay && parentDisplay !== 'visible') {

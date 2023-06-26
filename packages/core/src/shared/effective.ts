@@ -4,6 +4,10 @@ import { AnyFunction } from '../types'
 import { isForm } from './checkers'
 import { GlobalState } from './constants'
 
+/**
+ * @description: 基于 LifeCycle 能力
+ * @return {*}
+ */
 export const createEffectHook = <
   F extends (payload: any, ...ctxs: any[]) => AnyFunction
 >(
@@ -27,6 +31,9 @@ export const createEffectHook = <
   }
 }
 
+/**
+ * @description 创造一个一个小闭包，保存一个全局变量GlobalState的下标
+ */
 export const createEffectContext = <T = any>(defaultValue?: T) => {
   let index: number
   return {

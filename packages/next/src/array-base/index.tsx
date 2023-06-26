@@ -188,7 +188,8 @@ ArrayBase.Addition = (props) => {
           array.field?.unshift?.(defaultValue)
           array.props?.onAdd?.(0)
         } else {
-          array.field?.push?.(defaultValue)
+          // TODO 淡月 mark
+          array.field?.push?.({})
           array.props?.onAdd?.(array?.field?.value?.length - 1)
         }
         if (props.onClick) {

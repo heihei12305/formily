@@ -1,7 +1,4 @@
 import { observable, action, autorun } from '..'
-import { reaction } from '../autorun'
-import { batch } from '../batch'
-import { define } from '../model'
 
 describe('normal action', () => {
   test('no action', () => {

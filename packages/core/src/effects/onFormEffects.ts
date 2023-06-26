@@ -7,6 +7,8 @@ function createFormEffect(type: LifeCycleTypes) {
   return createEffectHook(
     type,
     (form: Form) => (callback: (form: Form) => void) => {
+      // batch 是一种常规写法，如果确定无需监听 observable 用 untracked
+      // 这里是生命周期函数，初步感觉至少 onFormUnmount、onFormMount、onFormInit 这里的回调其实只应该执行一次的
       batch(() => {
         callback(form)
       })
@@ -68,6 +70,11 @@ export const onFormGraphChange = createFormEffect(
   LifeCycleTypes.ON_FORM_GRAPH_CHANGE
 )
 export const onFormLoading = createFormEffect(LifeCycleTypes.ON_FORM_LOADING)
+
+/**
+ * @description: 用于实现表单响应式逻辑的副作用钩子，它的核心原理就是表单初始化的时候会执行回调函数，同时自动追踪依赖，依赖数据发生变化时回调函数会重复执行
+ * @return {*}
+ */
 export function onFormReact(callback?: (form: Form) => void) {
   let dispose = null
   onFormInit((form) => {

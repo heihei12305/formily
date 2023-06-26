@@ -26,6 +26,10 @@ const takeMatchPattern = (form: Form, pattern: FormPath) => {
   }
 }
 
+/**
+ * @description: 大概干的事就是维护一个 match 后的 addresses，然后通过操作 addresses 进行操作
+ * @return {*}
+ */
 export class Query {
   private pattern: FormPath
   private addresses: string[] = []
@@ -92,6 +96,7 @@ export class Query {
   }
 
   get<K extends keyof IGeneralFieldState>(key: K): IGeneralFieldState[K] {
+    // 这个玩意返回一个 Field
     const results: any = this.take()
     if (results) {
       return results[key]

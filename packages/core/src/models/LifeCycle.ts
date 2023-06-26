@@ -12,6 +12,13 @@ export class LifeCycle<Payload = any> {
   constructor(...params: LifeCycleParams<Payload>) {
     this.listener = this.buildListener(params)
   }
+  /**
+   * @description: 过于离谱 无法理解 看这个结构好像是
+   * * 如果是函数就直接扔进去自己处理，
+   * * 如果是字符串+函数 就判断一下，如果是这个 type 再进行回调
+   * @param {any} params
+   * @return {*}
+   */
   buildListener = (params: any[]) => {
     return function (payload: { type: string; payload: Payload }, ctx: any) {
       for (let index = 0; index < params.length; index++) {

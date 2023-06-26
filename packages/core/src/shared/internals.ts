@@ -72,6 +72,12 @@ const notify = (
   }
 }
 
+/**
+ * @description 判断是html input会自动停止冒泡
+ * @param event
+ * @param stopPropagation 默认为true
+ * @returns boolean
+ */
 export const isHTMLInputEvent = (event: any, stopPropagation = true) => {
   if (event?.target) {
     if (
@@ -104,6 +110,11 @@ export const buildFieldPath = (field: GeneralField) => {
   return buildDataPath(field.form.fields, field.address)
 }
 
+/**
+ * @description:  基于 segments 构建 path
+ * * void 特殊逻辑在这处理的
+ * @return {*}
+ */
 export const buildDataPath = (
   fields: Record<string, GeneralField>,
   pattern: FormPath
@@ -139,6 +150,12 @@ export const buildDataPath = (
   return new FormPath(path)
 }
 
+/**
+ * @description: 更新 Node 地址&路径 等信息
+ * @param {GeneralField} field
+ * @param {FormPathPattern} address
+ * @return {*}
+ */
 export const locateNode = (field: GeneralField, address: FormPathPattern) => {
   field.address = FormPath.parse(address)
   field.path = buildFieldPath(field)
@@ -146,6 +163,10 @@ export const locateNode = (field: GeneralField, address: FormPathPattern) => {
   return field
 }
 
+/**
+ * @description: 分发 field state 相关变化
+ * @return {*}
+ */
 export const patchFieldStates = (
   target: Record<string, GeneralField>,
   patches: INodePatch<GeneralField>[]
@@ -167,6 +188,11 @@ export const patchFieldStates = (
   })
 }
 
+/**
+ * @description:
+ * * forceClear 对应的这些 form 没有清理 是为什么呢
+ * @return {*}
+ */
 export const destroy = (
   target: Record<string, GeneralField>,
   address: string,
@@ -312,6 +338,7 @@ export const validateToFeedbacks = async (
 
   batch(() => {
     each(results, (messages, type) => {
+      // feedback 是一个还挺重要的变量
       field.setFeedback({
         triggerType,
         type,
@@ -347,6 +374,10 @@ export const setValidatorRule = (field: Field, name: string, value: any) => {
   }
 }
 
+/**
+ * @description: ArrayField 操作相关核心代码
+ * @return {*}
+ */
 export const spliceArrayState = (
   field: ArrayField,
   props?: ISpliceArrayStateProps
@@ -557,6 +588,11 @@ export const cleanupObjectChildren = (field: ObjectField, keys: string[]) => {
   })
 }
 
+/**
+ * @description: 感觉是通过 path 系统，去拿具体需要哪些移动
+ * @param {*} batch
+ * @return {*}
+ */
 export const initFieldUpdate = batch.scope.bound((field: GeneralField) => {
   const form = field.form
   const updates = FormPath.ensureIn(form, 'requests.updates', [])
@@ -631,6 +667,12 @@ export const deserialize = (model: any, setter: any) => {
   return model
 }
 
+/**
+ * @description 序列化一下 model, model 估计是个 proxy，相当于创建一个当前快照
+ * @param model
+ * @param getter
+ * @returns
+ */
 export const serialize = (model: any, getter?: any) => {
   if (isFn(getter)) {
     return getter(model)
@@ -794,6 +836,7 @@ export const setSubmitting = (target: Form | Field, submitting: boolean) => {
 export const setLoading = (target: Form | Field, loading: boolean) => {
   clearTimeout(target.requests.loading)
   if (loading) {
+    //TODO 为什么要这么写呢
     target.requests.loading = setTimeout(() => {
       batch(() => {
         target.loading = loading
@@ -878,6 +921,9 @@ export const batchSubmit = async <T>(
   return results
 }
 
+/**
+ * @description:  核心校验触发的地方
+ */
 export const batchValidate = async (
   target: Form | Field,
   pattern: FormPathPattern,
@@ -895,6 +941,7 @@ export const batchValidate = async (
   })
   await Promise.all(tasks)
   if (isForm(target)) target.setValidating(false)
+  // 其实就是 errors 这个数组 length 为 0
   if (target.invalid) {
     notify(
       target,
@@ -983,6 +1030,7 @@ export const resetSelf = batch.bound(
     target.inputValues = []
     target.caches = {}
     if (!isUndef(target.value)) {
+      // forceClear 就是连 initialValue 都不取么。。。 直接干到底
       if (options?.forceClear) {
         target.value = typedDefaultValue
       } else {
@@ -1022,11 +1070,23 @@ export const getValidFormValues = (values: any) => {
   return clone(values || {})
 }
 
+/**
+ * @description 设置 value 的时候，会去处理 initialValue 和 value
+ * @param value
+ * @param initialValue
+ * @returns
+ */
 export const getValidFieldDefaultValue = (value: any, initialValue: any) => {
   if (allowAssignDefaultValue(value, initialValue)) return clone(initialValue)
   return value
 }
 
+/**
+ * @param target
+ * @param source
+ * @returns
+ * @description 当 target 为 undefined、空, 且 source 不为 undefined、空 时返回true
+ */
 export const allowAssignDefaultValue = (target: any, source: any) => {
   const isEmptyTarget = target !== null && isEmpty(target)
   const isEmptySource = source !== null && isEmpty(source)
@@ -1054,6 +1114,10 @@ export const allowAssignDefaultValue = (target: any, source: any) => {
   return false
 }
 
+/**
+ * @description: Field 联动创建
+ * @return {*}
+ */
 export const createReactions = (field: GeneralField) => {
   const reactions = toArr(field.props.reactions)
   field.form.addEffects(field, () => {
@@ -1072,6 +1136,10 @@ export const createReactions = (field: GeneralField) => {
   })
 }
 
+/**
+ * @description: 当 tracker 函数返回值变化时 触发 scheduler 执行，且有当前闭包环境
+ * @return {*}
+ */
 export const createReaction = <T>(
   tracker: () => T,
   scheduler?: (value: T) => void

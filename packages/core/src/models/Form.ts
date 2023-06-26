@@ -537,6 +537,7 @@ export class Form<ValueType extends object = any> {
   }
 
   notify = (type: string, payload?: any) => {
+    // heart 内部其实也是调用的 lifecycle 的 notify 方法
     this.heart.publish(type, payload ?? this)
   }
 
@@ -609,6 +610,10 @@ export class Form<ValueType extends object = any> {
     return batchSubmit(this, onSubmit)
   }
 
+  /**
+   * @description:
+   * * forceClear 是不取 initialValues 直接by类型设置为 undefined/[]/{}
+   */
   reset = (pattern: FormPathPattern = '*', options?: IFieldResetOptions) => {
     return batchReset(this, pattern, options)
   }
